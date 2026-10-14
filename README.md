@@ -1,4 +1,4 @@
-# 📅 CalendarApp
+# CalendarApp
 
 Personal Calendar Management System — a school project built with ASP.NET Core 8.0 MVC.
 
