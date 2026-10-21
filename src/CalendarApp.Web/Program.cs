@@ -1,4 +1,6 @@
+using CalendarApp.Domain.Interfaces;
 using CalendarApp.Infrastructure.Data;
+using CalendarApp.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? "Data Source=CalendarApp.db";
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<ICalendarRepository, CalendarRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICalendarShareRepository, CalendarShareRepository>();
+builder.Services.AddScoped<IInvitationRepository, InvitationRepository>();
 
 builder.Services.AddControllersWithViews();
 
