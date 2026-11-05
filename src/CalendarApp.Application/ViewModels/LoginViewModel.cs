@@ -4,18 +4,18 @@ using System.ComponentModel.DataAnnotations;
 
 public class LoginViewModel
 {
-  [Required(ErrorMessage = "E-mail je povinný.")]
-  [EmailAddress(ErrorMessage = "Zadajte platnú e-mailovú adresu.")]
-  [Display(Name = "E-mail")]
-  public string Email { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+    [Display(Name = "Email")]
+    public string Email { get; set; } = string.Empty;
 
-  [Required(ErrorMessage = "Heslo je povinné.")]
-  [DataType(DataType.Password)]
-  [Display(Name = "Heslo")]
-  public string Password { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Password is required.")]
+    [DataType(DataType.Password)]
+    [Display(Name = "Password")]
+    public string Password { get; set; } = string.Empty;
 
-  [Display(Name = "Zapamätať prihlásenie")]
-  public bool RememberMe { get; set; }
+    [Display(Name = "Remember me")]
+    public bool RememberMe { get; set; }
 
-  public string? ReturnUrl { get; set; }
+    public string? ReturnUrl { get; set; }
 }

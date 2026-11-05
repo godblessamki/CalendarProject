@@ -1,13 +1,13 @@
 @model RegisterViewModel
 @{
-    ViewData["Title"] = "Registrácia";
+    ViewData["Title"] = "Register";
 }
 
 <div class="row justify-content-center mt-4">
     <div class="col-md-6 col-lg-5">
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
-                <h2 class="card-title text-center mb-4">Vytvoriť nový účet</h2>
+                <h2 class="card-title text-center mb-4">Create a New Account</h2>
 
                 <form asp-action="Register" method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -15,19 +15,19 @@
                     <div class="row mb-3">
                         <div class="col">
                             <label asp-for="FirstName" class="form-label"></label>
-                            <input asp-for="FirstName" class="form-control" placeholder="Janko" />
+                            <input asp-for="FirstName" class="form-control" placeholder="John" />
                             <span asp-validation-for="FirstName" class="text-danger small"></span>
                         </div>
                         <div class="col">
                             <label asp-for="LastName" class="form-label"></label>
-                            <input asp-for="LastName" class="form-control" placeholder="Hraško" />
+                            <input asp-for="LastName" class="form-control" placeholder="Doe" />
                             <span asp-validation-for="LastName" class="text-danger small"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" placeholder="meno@priklad.sk" />
+                        <input asp-for="Email" class="form-control" placeholder="user@example.com" />
                         <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
 
@@ -43,11 +43,11 @@
                         <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 py-2">Zaregistrovať sa</button>
+                    <button type="submit" class="btn btn-primary w-100 py-2">Register</button>
 
                     <div class="text-center mt-3">
-                        <span class="text-muted">Už máte účet?</span>
-                        <a asp-action="Login" class="text-decoration-none">Prihláste sa</a>
+                        <span class="text-muted">Already have an account?</span>
+                        <a asp-action="Login" class="text-decoration-none">Log in</a>
                     </div>
                 </form>
             </div>

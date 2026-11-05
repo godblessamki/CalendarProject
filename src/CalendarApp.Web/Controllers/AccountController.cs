@@ -1,146 +1,143 @@
 namespace CalendarApp.Web.Controllers;
 
-using Microsoft.AspNetCore.Mvc;
+using CalendarApp.Application.ViewModels;
 using CalendarApp.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using CalendarApp.Application.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 public class AccountController : Controller
 {
-  private readonly UserManager<ApplicationUser> _userManager;
-  private readonly SignInManager<ApplicationUser> _signInManager;
-  private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-  // DI
-  public AccountController(
-      UserManager<ApplicationUser> userManager,
-      SignInManager<ApplicationUser> signInManager,
-      RoleManager<IdentityRole> roleManager)
-  {
-    _userManager = userManager;
-    _signInManager = signInManager;
-    _roleManager = roleManager;
-  }
-
-  // GET: /Account/Register
-  [HttpGet]
-  [AllowAnonymous]
-  public IActionResult Register()
-  {
-    if (User.Identity?.IsAuthenticated == true)
+    public AccountController(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager)
     {
-      return RedirectToAction("Index", "Home");
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
     }
 
-    return View();
-  }
-
-  // POST: /Account/Register
-  [HttpPost]
-  [AllowAnonymous]
-  // poistka proti cross-site request forgery
-  [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Register(RegisterViewModel model)
-  {
-    if (!ModelState.IsValid)
+    // GET: /Account/Register
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Register()
     {
-      return View(model);
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return View();
     }
 
-    var user = new ApplicationUser
+    // POST: /Account/Register
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
-      UserName = model.Email,
-      Email = model.Email,
-      FirstName = model.FirstName,
-      LastName = model.LastName,
-      CreatedAt = DateTime.UtcNow
-    };
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
-    var result = await _userManager.CreateAsync(user, model.Password);
+        var user = new ApplicationUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            CreatedAt = DateTime.UtcNow
+        };
 
-    if (result.Succeeded)
-    {
-      if (!await _roleManager.RoleExistsAsync("User"))
-      {
-        await _roleManager.CreateAsync(new IdentityRole("User"));
-      }
+        var result = await _userManager.CreateAsync(user, model.Password);
 
-      await _userManager.AddToRoleAsync(user, "User");
+        if (result.Succeeded)
+        {
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+            }
 
-      await _signInManager.SignInAsync(user, isPersistent: false);
+            await _userManager.AddToRoleAsync(user, "User");
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
-      return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        return View(model);
     }
 
-    foreach (var error in result.Errors)
+    // GET: /Account/Login
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult Login(string? returnUrl = null)
     {
-      ModelState.AddModelError(string.Empty, error.Description);
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
     }
 
-    return View(model);
-  }
-  // GET: /Account/Login
-  [HttpGet]
-  [AllowAnonymous]
-  public IActionResult Login(string? returnUrl = null)
-  {
-    if (User.Identity?.IsAuthenticated == true)
+    // POST: /Account/Login
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
     {
-      return RedirectToAction("Index", "Home");
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(
+            model.Email,
+            model.Password,
+            model.RememberMe,
+            lockoutOnFailure: false);
+
+        if (result.Succeeded)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        ModelState.AddModelError(string.Empty, "Invalid email or password.");
+        return View(model);
     }
 
-    ViewData["ReturnUrl"] = returnUrl;
-    return View();
-  }
-
-  // POST: /Account/Login
-  [HttpPost]
-  [AllowAnonymous]
-  // poistka proti cross-site request forgery
-  [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
-  {
-    ViewData["ReturnUrl"] = returnUrl;
-
-    if (!ModelState.IsValid)
+    // POST: /Account/Logout
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
     {
-      return View(model);
+        await _signInManager.SignOutAsync();
+        return RedirectToAction("Index", "Home");
     }
 
-    var result = await _signInManager.PasswordSignInAsync(
-        model.Email,
-        model.Password,
-        model.RememberMe,
-        lockoutOnFailure: false);
-
-    if (result.Succeeded)
+    // GET: /Account/AccessDenied
+    [HttpGet]
+    public IActionResult AccessDenied()
     {
-      if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-      {
-        return Redirect(returnUrl);
-      }
-
-      return RedirectToAction("Index", "Home");
+        return View();
     }
-
-    ModelState.AddModelError(string.Empty, "Neplatný e-mail alebo heslo.");
-    return View(model);
-  }
-
-  // POST: /Account/Logout
-  [HttpPost]
-  [ValidateAntiForgeryToken]
-  public async Task<IActionResult> Logout()
-  {
-    await _signInManager.SignOutAsync();
-    return RedirectToAction("Index", "Home");
-  }
-
-  // GET: /Account/AccessDenied
-  [HttpGet]
-  public IActionResult AccessDenied()
-  {
-    return View();
-  }
 }

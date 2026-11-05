@@ -4,27 +4,27 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
-  @if (SignInManager.IsSignedIn(User))
-  {
+@if (SignInManager.IsSignedIn(User))
+{
     var currentUser = await UserManager.GetUserAsync(User);
     var displayName = currentUser != null ? $"{currentUser.FirstName} {currentUser.LastName}" : User.Identity?.Name;
 
     <li class="nav-item">
-      <span class="nav-link text-dark">Ahoj, <strong>@displayName</strong>!</span>
+        <span class="nav-link text-dark">Hello, <strong>@displayName</strong>!</span>
     </li>
     <li class="nav-item">
-      <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
-        <button type="submit" class="nav-link btn btn-link text-dark border-0">Odhlásiť sa</button>
-      </form>
+        <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="nav-link btn btn-link text-dark border-0">Log out</button>
+        </form>
     </li>
-  }
-  else
-  {
+}
+else
+{
     <li class="nav-item">
-      <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Registrácia</a>
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Prihlásiť sa</a>
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Log in</a>
     </li>
-  }
+}
 </ul>
