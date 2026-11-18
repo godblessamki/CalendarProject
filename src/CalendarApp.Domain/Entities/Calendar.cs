@@ -11,7 +11,6 @@ public class Calendar
 
     // Foreign keys
     public string OwnerId { get; set; } = string.Empty;
-    public ApplicationUser Owner { get; set; } = null!;
 
     // Navigation
     public ICollection<Event> Events { get; set; } = new List<Event>();

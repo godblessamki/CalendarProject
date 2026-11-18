@@ -1,6 +1,7 @@
 namespace CalendarApp.Infrastructure.Data.Configurations;
 
 using CalendarApp.Domain.Entities;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,7 +25,7 @@ public class CalendarShareConfiguration : IEntityTypeConfiguration<CalendarShare
             .HasForeignKey(cs => cs.CalendarId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(cs => cs.SharedWithUser)
+        builder.HasOne<ApplicationUser>()
             .WithMany(u => u.SharedCalendars)
             .HasForeignKey(cs => cs.SharedWithUserId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -3,6 +3,7 @@ namespace CalendarApp.Tests.Infrastructure;
 using CalendarApp.Domain.Entities;
 using CalendarApp.Domain.Enums;
 using CalendarApp.Infrastructure.Data;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -235,40 +236,48 @@ public class ApplicationDbContextTests : IDisposable
         using (var context = CreateContext())
         {
             var savedCalendar = await context.Calendars
-                .Include(c => c.Owner)
                 .Include(c => c.Events)
                 .ThenInclude(e => e.Category)
                 .Include(c => c.Shares)
-                .ThenInclude(s => s.SharedWithUser)
                 .FirstOrDefaultAsync(c => c.Id == 1);
 
             Assert.NotNull(savedCalendar);
             Assert.Equal("Work Calendar", savedCalendar.Name);
-            Assert.Equal("Alice", savedCalendar.Owner.FirstName);
+            Assert.Equal("user-1", savedCalendar.OwnerId);
             Assert.Single(savedCalendar.Events);
             Assert.Equal("Sprint Planning", savedCalendar.Events.First().Title);
             Assert.Equal("Important", savedCalendar.Events.First().Category?.Name);
             Assert.Single(savedCalendar.Shares);
-            Assert.Equal("Bob", savedCalendar.Shares.First().SharedWithUser.FirstName);
+            Assert.Equal("user-2", savedCalendar.Shares.First().SharedWithUserId);
 
             var savedInvitation = await context.Invitations
                 .Include(i => i.Event)
-                .Include(i => i.InvitedUser)
                 .FirstOrDefaultAsync(i => i.Id == 1);
 
             Assert.NotNull(savedInvitation);
             Assert.Equal(InvitationStatus.Pending, savedInvitation.Status);
             Assert.Equal("Sprint Planning", savedInvitation.Event.Title);
-            Assert.Equal("Bob", savedInvitation.InvitedUser.FirstName);
+            Assert.Equal("user-2", savedInvitation.InvitedUserId);
 
             var savedNotification = await context.Notifications
                 .Include(n => n.Event)
-                .Include(n => n.User)
                 .FirstOrDefaultAsync(n => n.Id == 1);
 
             Assert.NotNull(savedNotification);
             Assert.Equal("You were invited to Sprint Planning", savedNotification.Message);
-            Assert.Equal("Bob", savedNotification.User.FirstName);
+            Assert.Equal("user-2", savedNotification.UserId);
+
+            var userWithNav = await context.Users
+                .Include(u => u.Calendars)
+                .Include(u => u.SharedCalendars)
+                .Include(u => u.Notifications)
+                .Include(u => u.Invitations)
+                .FirstOrDefaultAsync(u => u.Id == "user-2");
+
+            Assert.NotNull(userWithNav);
+            Assert.Single(userWithNav.SharedCalendars);
+            Assert.Single(userWithNav.Notifications);
+            Assert.Single(userWithNav.Invitations);
         }
     }
 

@@ -1,6 +1,7 @@
 namespace CalendarApp.Infrastructure.Data.Configurations;
 
 using CalendarApp.Domain.Entities;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,7 +29,7 @@ public class InvitationConfiguration : IEntityTypeConfiguration<Invitation>
             .HasForeignKey(i => i.EventId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(i => i.InvitedUser)
+        builder.HasOne<ApplicationUser>()
             .WithMany(u => u.Invitations)
             .HasForeignKey(i => i.InvitedUserId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -1,5 +1,8 @@
-namespace CalendarApp.Domain.Entities;
+namespace CalendarApp.Infrastructure.Identity;
 
+using System;
+using System.Collections.Generic;
+using CalendarApp.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
 public class ApplicationUser : IdentityUser

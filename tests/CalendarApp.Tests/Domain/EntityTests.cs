@@ -1,51 +1,21 @@
+namespace CalendarApp.Tests.Domain;
+
 using CalendarApp.Domain.Entities;
 using CalendarApp.Domain.Enums;
-using Microsoft.AspNetCore.Identity;
-
-namespace CalendarApp.Tests.Domain;
 
 public class EntityTests
 {
     [Fact]
-    public void ApplicationUser_ShouldInitializeCollectionsAndInheritFromIdentityUser()
-    {
-        // Arrange & Act
-        var user = new ApplicationUser
-        {
-            FirstName = "John",
-            LastName = "Doe",
-            ProfileImagePath = "/uploads/profiles/johndoe.png"
-        };
-
-        // Assert
-        Assert.IsAssignableFrom<IdentityUser>(user);
-        Assert.Equal("John", user.FirstName);
-        Assert.Equal("Doe", user.LastName);
-        Assert.Equal("/uploads/profiles/johndoe.png", user.ProfileImagePath);
-        Assert.True(user.CreatedAt <= DateTime.UtcNow);
-        Assert.NotNull(user.Calendars);
-        Assert.Empty(user.Calendars);
-        Assert.NotNull(user.SharedCalendars);
-        Assert.Empty(user.SharedCalendars);
-        Assert.NotNull(user.Notifications);
-        Assert.Empty(user.Notifications);
-        Assert.NotNull(user.Invitations);
-        Assert.Empty(user.Invitations);
-    }
-
-    [Fact]
     public void Calendar_ShouldInitializeWithDefaultValuesAndCollections()
     {
         // Arrange & Act
-        var owner = new ApplicationUser { Id = "user-1", UserName = "john" };
         var calendar = new Calendar
         {
             Id = 1,
             Name = "Work",
             Description = "Work related tasks",
             Color = "#3B82F6",
-            OwnerId = owner.Id,
-            Owner = owner
+            OwnerId = "user-1"
         };
 
         // Assert
@@ -54,7 +24,6 @@ public class EntityTests
         Assert.Equal("Work related tasks", calendar.Description);
         Assert.Equal("#3B82F6", calendar.Color);
         Assert.Equal("user-1", calendar.OwnerId);
-        Assert.Same(owner, calendar.Owner);
         Assert.True(calendar.CreatedAt <= DateTime.UtcNow);
         Assert.True(calendar.UpdatedAt <= DateTime.UtcNow);
         Assert.NotNull(calendar.Events);
@@ -134,7 +103,6 @@ public class EntityTests
     public void Notification_ShouldInitializeWithCorrectDefaultsAndProperties()
     {
         // Arrange & Act
-        var user = new ApplicationUser { Id = "user-2" };
         var ev = new Event { Id = 99, Title = "Important Meeting" };
         var remindAt = DateTime.UtcNow.AddMinutes(15);
 
@@ -144,8 +112,7 @@ public class EntityTests
             Message = "Event reminder: Important Meeting starts soon",
             Type = NotificationType.EventReminder,
             RemindAt = remindAt,
-            UserId = user.Id,
-            User = user,
+            UserId = "user-2",
             EventId = ev.Id,
             Event = ev
         };
@@ -158,7 +125,6 @@ public class EntityTests
         Assert.Equal(NotificationType.EventReminder, notification.Type);
         Assert.Equal(remindAt, notification.RemindAt);
         Assert.Equal("user-2", notification.UserId);
-        Assert.Same(user, notification.User);
         Assert.Equal(99, notification.EventId);
         Assert.Same(ev, notification.Event);
     }
@@ -168,15 +134,13 @@ public class EntityTests
     {
         // Arrange & Act
         var calendar = new Calendar { Id = 3, Name = "Shared Calendar" };
-        var user = new ApplicationUser { Id = "user-3" };
 
         var share = new CalendarShare
         {
             Id = 12,
             CalendarId = calendar.Id,
             Calendar = calendar,
-            SharedWithUserId = user.Id,
-            SharedWithUser = user,
+            SharedWithUserId = "user-3",
             AccessLevel = ShareAccessLevel.ReadWrite,
             IsAccepted = true
         };
@@ -186,7 +150,6 @@ public class EntityTests
         Assert.Equal(3, share.CalendarId);
         Assert.Same(calendar, share.Calendar);
         Assert.Equal("user-3", share.SharedWithUserId);
-        Assert.Same(user, share.SharedWithUser);
         Assert.Equal(ShareAccessLevel.ReadWrite, share.AccessLevel);
         Assert.True(share.IsAccepted);
         Assert.True(share.SharedAt <= DateTime.UtcNow);
@@ -197,15 +160,13 @@ public class EntityTests
     {
         // Arrange & Act
         var ev = new Event { Id = 88, Title = "Birthday Party" };
-        var invitedUser = new ApplicationUser { Id = "user-4" };
 
         var invitation = new Invitation
         {
             Id = 21,
             EventId = ev.Id,
             Event = ev,
-            InvitedUserId = invitedUser.Id,
-            InvitedUser = invitedUser,
+            InvitedUserId = "user-4",
             InvitedByUserId = "user-admin",
             Message = "Please join my party!"
         };
@@ -216,7 +177,6 @@ public class EntityTests
         Assert.Equal(88, invitation.EventId);
         Assert.Same(ev, invitation.Event);
         Assert.Equal("user-4", invitation.InvitedUserId);
-        Assert.Same(invitedUser, invitation.InvitedUser);
         Assert.Equal("user-admin", invitation.InvitedByUserId);
         Assert.Equal("Please join my party!", invitation.Message);
         Assert.Null(invitation.RespondedAt);

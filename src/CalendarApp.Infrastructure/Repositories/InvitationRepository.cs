@@ -22,7 +22,6 @@ public class InvitationRepository : Repository<Invitation>, IInvitationRepositor
     public async Task<IReadOnlyList<Invitation>> GetInvitationsByEventIdAsync(int eventId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Include(i => i.InvitedUser)
             .Where(i => i.EventId == eventId)
             .ToListAsync(cancellationToken);
     }
@@ -50,7 +49,6 @@ public class InvitationRepository : Repository<Invitation>, IInvitationRepositor
         return await _dbSet
             .Include(i => i.Event)
                 .ThenInclude(e => e.Calendar)
-            .Include(i => i.InvitedUser)
             .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
     }
 }

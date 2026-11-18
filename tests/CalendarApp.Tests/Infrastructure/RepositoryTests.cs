@@ -7,6 +7,7 @@ using CalendarApp.Domain.Entities;
 using CalendarApp.Domain.Enums;
 using CalendarApp.Domain.Interfaces;
 using CalendarApp.Infrastructure.Data;
+using CalendarApp.Infrastructure.Identity;
 using CalendarApp.Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -138,7 +139,7 @@ public class RepositoryTests : IDisposable
 
             var details = await repo.GetCalendarWithDetailsAsync(1);
             Assert.NotNull(details);
-            Assert.Equal("Alice", details.Owner.FirstName);
+            Assert.Equal("u1", details.OwnerId);
             Assert.Single(details.Events);
 
             var isOwner = await repo.IsUserOwnerAsync(1, "u1");
@@ -337,7 +338,7 @@ public class RepositoryTests : IDisposable
 
             var byCal = await repo.GetSharesByCalendarIdAsync(1);
             Assert.Single(byCal);
-            Assert.Equal("User", byCal[0].SharedWithUser.FirstName);
+            Assert.Equal("u2", byCal[0].SharedWithUserId);
 
             var byUser = await repo.GetSharesByUserIdAsync("u2");
             Assert.Single(byUser);
@@ -389,7 +390,7 @@ public class RepositoryTests : IDisposable
 
             var byEvent = await repo.GetInvitationsByEventIdAsync(1);
             Assert.Single(byEvent);
-            Assert.Equal("Invitee", byEvent[0].InvitedUser.FirstName);
+            Assert.Equal("u2", byEvent[0].InvitedUserId);
 
             var byUser = await repo.GetInvitationsByUserIdAsync("u2");
             Assert.Single(byUser);
@@ -402,7 +403,7 @@ public class RepositoryTests : IDisposable
             Assert.NotNull(details);
             Assert.Equal("Party", details.Event.Title);
             Assert.Equal("Cal", details.Event.Calendar.Name);
-            Assert.Equal("Invitee", details.InvitedUser.FirstName);
+            Assert.Equal("u2", details.InvitedUserId);
         }
     }
 

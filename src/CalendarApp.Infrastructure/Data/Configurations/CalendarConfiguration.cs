@@ -1,6 +1,7 @@
 namespace CalendarApp.Infrastructure.Data.Configurations;
 
 using CalendarApp.Domain.Entities;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -27,7 +28,7 @@ public class CalendarConfiguration : IEntityTypeConfiguration<Calendar>
         builder.Property(c => c.UpdatedAt)
             .IsRequired();
 
-        builder.HasOne(c => c.Owner)
+        builder.HasOne<ApplicationUser>()
             .WithMany(u => u.Calendars)
             .HasForeignKey(c => c.OwnerId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -14,6 +14,5 @@ public class Invitation
     public int EventId { get; set; }
     public Event Event { get; set; } = null!;
     public string InvitedUserId { get; set; } = string.Empty;
-    public ApplicationUser InvitedUser { get; set; } = null!;
     public string InvitedByUserId { get; set; } = string.Empty;
 }

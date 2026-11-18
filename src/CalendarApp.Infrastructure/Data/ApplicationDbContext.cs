@@ -2,6 +2,7 @@ namespace CalendarApp.Infrastructure.Data;
 
 using CalendarApp.Domain.Entities;
 using CalendarApp.Domain.Enums;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

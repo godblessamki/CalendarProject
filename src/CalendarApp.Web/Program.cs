@@ -1,5 +1,6 @@
 using CalendarApp.Domain.Interfaces;
 using CalendarApp.Infrastructure.Data;
+using CalendarApp.Infrastructure.Identity;
 using CalendarApp.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using CalendarApp.Domain.Entities;

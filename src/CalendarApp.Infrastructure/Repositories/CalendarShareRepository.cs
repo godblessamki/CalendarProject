@@ -22,7 +22,6 @@ public class CalendarShareRepository : Repository<CalendarShare>, ICalendarShare
     public async Task<IReadOnlyList<CalendarShare>> GetSharesByCalendarIdAsync(int calendarId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Include(s => s.SharedWithUser)
             .Where(s => s.CalendarId == calendarId)
             .ToListAsync(cancellationToken);
     }
@@ -39,7 +38,6 @@ public class CalendarShareRepository : Repository<CalendarShare>, ICalendarShare
     {
         return await _dbSet
             .Include(s => s.Calendar)
-            .Include(s => s.SharedWithUser)
             .FirstOrDefaultAsync(s => s.CalendarId == calendarId && s.SharedWithUserId == userId, cancellationToken);
     }
 
