@@ -29,6 +29,11 @@ public class CalendarShareConfiguration : IEntityTypeConfiguration<CalendarShare
             .HasForeignKey(cs => cs.SharedWithUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne<ShareAccessLevelLookup>()
+            .WithMany()
+            .HasForeignKey(cs => cs.AccessLevel)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(cs => new { cs.CalendarId, cs.SharedWithUserId })
             .IsUnique();
 

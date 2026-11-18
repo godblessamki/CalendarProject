@@ -40,6 +40,10 @@ public class ApplicationDbContextTests : IDisposable
         Assert.NotNull(context.CalendarShares);
         Assert.NotNull(context.Invitations);
         Assert.NotNull(context.Users);
+        Assert.NotNull(context.RecurrenceTypes);
+        Assert.NotNull(context.ShareAccessLevels);
+        Assert.NotNull(context.InvitationStatuses);
+        Assert.NotNull(context.NotificationTypes);
     }
 
     [Fact]
@@ -79,6 +83,38 @@ public class ApplicationDbContextTests : IDisposable
         var catNameProp = categoryEntity.FindProperty(nameof(Category.Name));
         Assert.NotNull(catNameProp);
         Assert.Equal(50, catNameProp.GetMaxLength());
+
+        // RecurrenceTypeLookup entity metadata
+        var recurrenceEntity = model.FindEntityType(typeof(RecurrenceTypeLookup));
+        Assert.NotNull(recurrenceEntity);
+        var recNameProp = recurrenceEntity.FindProperty(nameof(RecurrenceTypeLookup.Name));
+        Assert.NotNull(recNameProp);
+        Assert.False(recNameProp.IsNullable);
+        Assert.Equal(50, recNameProp.GetMaxLength());
+
+        // ShareAccessLevelLookup entity metadata
+        var shareLevelEntity = model.FindEntityType(typeof(ShareAccessLevelLookup));
+        Assert.NotNull(shareLevelEntity);
+        var shareLevelNameProp = shareLevelEntity.FindProperty(nameof(ShareAccessLevelLookup.Name));
+        Assert.NotNull(shareLevelNameProp);
+        Assert.False(shareLevelNameProp.IsNullable);
+        Assert.Equal(50, shareLevelNameProp.GetMaxLength());
+
+        // InvitationStatusLookup entity metadata
+        var invStatusEntity = model.FindEntityType(typeof(InvitationStatusLookup));
+        Assert.NotNull(invStatusEntity);
+        var invStatusNameProp = invStatusEntity.FindProperty(nameof(InvitationStatusLookup.Name));
+        Assert.NotNull(invStatusNameProp);
+        Assert.False(invStatusNameProp.IsNullable);
+        Assert.Equal(50, invStatusNameProp.GetMaxLength());
+
+        // NotificationTypeLookup entity metadata
+        var notifTypeEntity = model.FindEntityType(typeof(NotificationTypeLookup));
+        Assert.NotNull(notifTypeEntity);
+        var notifTypeNameProp = notifTypeEntity.FindProperty(nameof(NotificationTypeLookup.Name));
+        Assert.NotNull(notifTypeNameProp);
+        Assert.False(notifTypeNameProp.IsNullable);
+        Assert.Equal(50, notifTypeNameProp.GetMaxLength());
 
         // Unique indexes
         var shareEntity = model.FindEntityType(typeof(CalendarShare));
@@ -179,7 +215,7 @@ public class ApplicationDbContextTests : IDisposable
                 UserId = user2.Id,
                 EventId = ev.Id,
                 Message = "You were invited to Sprint Planning",
-                Type = NotificationType.InvitationReceived
+                Type = NotificationType.EventInvitation
             };
             await context.Notifications.AddAsync(notification);
 
@@ -320,6 +356,53 @@ public class ApplicationDbContextTests : IDisposable
         {
             var ev = await context.Events.FindAsync(1);
             Assert.Null(ev);
+        }
+    }
+
+    [Fact]
+    public async Task ApplicationDbContext_EnumLookupTables_ShouldBeSeededWithAllEnumValues()
+    {
+        using var context = CreateContext();
+        await context.Database.EnsureCreatedAsync();
+
+        // RecurrenceType
+        var recurrenceTypes = await context.RecurrenceTypes.OrderBy(r => r.Id).ToListAsync();
+        Assert.Equal(Enum.GetValues<RecurrenceType>().Length, recurrenceTypes.Count);
+        foreach (var value in Enum.GetValues<RecurrenceType>())
+        {
+            var item = recurrenceTypes.FirstOrDefault(r => r.Id == value);
+            Assert.NotNull(item);
+            Assert.Equal(value.ToString(), item.Name);
+        }
+
+        // ShareAccessLevel
+        var shareLevels = await context.ShareAccessLevels.OrderBy(s => s.Id).ToListAsync();
+        Assert.Equal(Enum.GetValues<ShareAccessLevel>().Length, shareLevels.Count);
+        foreach (var value in Enum.GetValues<ShareAccessLevel>())
+        {
+            var item = shareLevels.FirstOrDefault(s => s.Id == value);
+            Assert.NotNull(item);
+            Assert.Equal(value.ToString(), item.Name);
+        }
+
+        // InvitationStatus
+        var invitationStatuses = await context.InvitationStatuses.OrderBy(i => i.Id).ToListAsync();
+        Assert.Equal(Enum.GetValues<InvitationStatus>().Length, invitationStatuses.Count);
+        foreach (var value in Enum.GetValues<InvitationStatus>())
+        {
+            var item = invitationStatuses.FirstOrDefault(i => i.Id == value);
+            Assert.NotNull(item);
+            Assert.Equal(value.ToString(), item.Name);
+        }
+
+        // NotificationType
+        var notificationTypes = await context.NotificationTypes.OrderBy(n => n.Id).ToListAsync();
+        Assert.Equal(Enum.GetValues<NotificationType>().Length, notificationTypes.Count);
+        foreach (var value in Enum.GetValues<NotificationType>())
+        {
+            var item = notificationTypes.FirstOrDefault(n => n.Id == value);
+            Assert.NotNull(item);
+            Assert.Equal(value.ToString(), item.Name);
         }
     }
 }

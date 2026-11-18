@@ -33,6 +33,11 @@ public class InvitationConfiguration : IEntityTypeConfiguration<Invitation>
             .HasForeignKey(i => i.InvitedUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne<InvitationStatusLookup>()
+            .WithMany()
+            .HasForeignKey(i => i.Status)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(i => new { i.EventId, i.InvitedUserId })
             .IsUnique();
 

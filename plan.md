@@ -205,7 +205,7 @@ public class Notification
     public DateTime CreatedAt { get; set; }
     public DateTime? ReadAt { get; set; }
     public bool IsRead { get; set; }
-    public NotificationType Type { get; set; }  // EventReminder, InvitationReceived, CalendarShared
+    public NotificationType Type { get; set; }  // EventReminder, EventInvitation, InvitationResponse, CalendarShared, System
     public DateTime? RemindAt { get; set; }     // When to show the notification
 
     // Foreign keys
@@ -258,9 +258,9 @@ public class Invitation
 
 ```csharp
 public enum RecurrenceType { None, Daily, Weekly, Monthly, Yearly }
-public enum ShareAccessLevel { ReadOnly, ReadWrite }
-public enum InvitationStatus { Pending, Accepted, Declined }
-public enum NotificationType { EventReminder, InvitationReceived, CalendarShared, InvitationResponse }
+public enum ShareAccessLevel { ReadOnly, ReadWrite, Manage }
+public enum InvitationStatus { Pending, Accepted, Declined, Tentative }
+public enum NotificationType { EventReminder, EventInvitation, InvitationResponse, CalendarShared, System }
 ```
 
 ### 3.4 ViewModels / DTOs (minimum 5 required)
