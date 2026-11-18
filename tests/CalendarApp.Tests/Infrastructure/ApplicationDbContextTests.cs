@@ -47,6 +47,16 @@ public class ApplicationDbContextTests : IDisposable
     }
 
     [Fact]
+    public void ApplicationDbContextFactory_ShouldCreateDbContextWithSqlServerProvider()
+    {
+        var factory = new ApplicationDbContextFactory();
+        using var context = factory.CreateDbContext(Array.Empty<string>());
+
+        Assert.NotNull(context);
+        Assert.Equal("Microsoft.EntityFrameworkCore.SqlServer", context.Database.ProviderName);
+    }
+
+    [Fact]
     public void ApplicationDbContext_ModelConfigurations_ShouldMatchExpectedMetadata()
     {
         using var context = CreateContext();

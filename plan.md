@@ -315,9 +315,9 @@ erDiagram
 
 ### 4.3 Database Provider
 
-- **SQLite** — zero configuration, file-based (`CalendarApp.db`)
-- Connection string in `appsettings.json`
-- EF Core provider: `Microsoft.EntityFrameworkCore.Sqlite`
+- **Microsoft SQL Server (MSSQL / LocalDB)**
+- Connection string in `appsettings.json` (`Server=(localdb)\mssqllocaldb;Database=CalendarApp;...`)
+- EF Core provider: `Microsoft.EntityFrameworkCore.SqlServer`
 
 ---
 
