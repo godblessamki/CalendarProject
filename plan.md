@@ -80,17 +80,16 @@ flowchart TD
     Web --> Infrastructure["CalendarApp.Infrastructure"]
     Application --> Domain["CalendarApp.Domain"]
     Infrastructure --> Domain
-    Infrastructure --> Application
     Tests["CalendarApp.Tests"] --> Application
     Tests --> Infrastructure
     Tests --> Domain
 ```
 
 > [!IMPORTANT]
-> - **Web** references Application (for services) and Infrastructure (only for DI registration/configuration).
-> - **Web** NEVER uses Infrastructure types directly in Controllers or Views.
+> - **Web** references Application (for services) and Infrastructure (for DI registration/configuration).
 > - **Application** references only Domain (no dependency on Infrastructure or Web).
-> - **Infrastructure** references Domain (for entity types) and Application (for service/repository interfaces).
+> - **Infrastructure** references Domain (for entity types and repository interfaces). It does NOT reference Application.
+> - **Domain** has zero external dependencies (pure POCO entities, enums, repository interfaces).
 
 ---
 
@@ -111,7 +110,10 @@ flowchart TD
 
 ### 3.2 Entity Definitions
 
-#### ApplicationUser (extends IdentityUser)
+> [!NOTE]
+> In Clean Architecture, `ApplicationUser` resides in `CalendarApp.Infrastructure.Identity` to keep the Domain layer 100% framework-independent. Domain entities store string user IDs (`OwnerId`, `UserId`, `SharedWithUserId`, `InvitedUserId`).
+
+#### ApplicationUser (extends IdentityUser, located in Infrastructure)
 
 ```csharp
 public class ApplicationUser : IdentityUser
@@ -143,7 +145,6 @@ public class Calendar
 
     // Foreign keys
     public string OwnerId { get; set; }
-    public ApplicationUser Owner { get; set; }
 
     // Navigation
     public ICollection<Event> Events { get; set; }
@@ -210,7 +211,6 @@ public class Notification
 
     // Foreign keys
     public string UserId { get; set; }
-    public ApplicationUser User { get; set; }
     public int? EventId { get; set; }
     public Event? Event { get; set; }
 }
@@ -230,7 +230,6 @@ public class CalendarShare
     public int CalendarId { get; set; }
     public Calendar Calendar { get; set; }
     public string SharedWithUserId { get; set; }
-    public ApplicationUser SharedWithUser { get; set; }
 }
 ```
 
@@ -249,7 +248,6 @@ public class Invitation
     public int EventId { get; set; }
     public Event Event { get; set; }
     public string InvitedUserId { get; set; }
-    public ApplicationUser InvitedUser { get; set; }
     public string InvitedByUserId { get; set; }
 }
 ```

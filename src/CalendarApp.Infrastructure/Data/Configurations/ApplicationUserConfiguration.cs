@@ -1,6 +1,6 @@
 namespace CalendarApp.Infrastructure.Data.Configurations;
 
-using CalendarApp.Domain.Entities;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

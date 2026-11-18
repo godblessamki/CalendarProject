@@ -1,6 +1,7 @@
 namespace CalendarApp.Infrastructure.Data.Configurations;
 
 using CalendarApp.Domain.Entities;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,7 +24,7 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.Type)
             .IsRequired();
 
-        builder.HasOne(n => n.User)
+        builder.HasOne<ApplicationUser>()
             .WithMany(u => u.Notifications)
             .HasForeignKey(n => n.UserId)
             .OnDelete(DeleteBehavior.Cascade);

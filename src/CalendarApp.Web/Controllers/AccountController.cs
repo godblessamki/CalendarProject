@@ -1,7 +1,7 @@
 namespace CalendarApp.Web.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
-using CalendarApp.Domain.Entities;
+using CalendarApp.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using CalendarApp.Application.ViewModels;

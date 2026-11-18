@@ -37,10 +37,8 @@ public class CalendarRepository : Repository<Calendar>, ICalendarRepository
     public async Task<Calendar?> GetCalendarWithDetailsAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .Include(c => c.Owner)
             .Include(c => c.Events)
             .Include(c => c.Shares)
-                .ThenInclude(s => s.SharedWithUser)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 

@@ -13,5 +13,4 @@ public class CalendarShare
     public int CalendarId { get; set; }
     public Calendar Calendar { get; set; } = null!;
     public string SharedWithUserId { get; set; } = string.Empty;
-    public ApplicationUser SharedWithUser { get; set; } = null!;
 }

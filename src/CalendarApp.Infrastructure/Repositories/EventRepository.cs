@@ -63,11 +63,9 @@ public class EventRepository : Repository<Event>, IEventRepository
     {
         return await _dbSet
             .Include(e => e.Calendar)
-                .ThenInclude(c => c.Owner)
             .Include(e => e.Category)
             .Include(e => e.Notifications)
             .Include(e => e.Invitations)
-                .ThenInclude(i => i.InvitedUser)
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 }
