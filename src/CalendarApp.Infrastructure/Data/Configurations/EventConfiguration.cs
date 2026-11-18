@@ -48,6 +48,11 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
             .HasForeignKey(e => e.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne<RecurrenceTypeLookup>()
+            .WithMany()
+            .HasForeignKey(e => e.Recurrence)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasMany(e => e.Notifications)
             .WithOne(n => n.Event)
             .HasForeignKey(n => n.EventId)

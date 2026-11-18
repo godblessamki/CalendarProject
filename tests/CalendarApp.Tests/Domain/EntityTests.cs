@@ -222,4 +222,44 @@ public class EntityTests
         Assert.Null(invitation.RespondedAt);
         Assert.True(invitation.SentAt <= DateTime.UtcNow);
     }
+
+    [Fact]
+    public void LookupEntities_ShouldInitializeWithProperties()
+    {
+        // RecurrenceTypeLookup
+        var recurrence = new RecurrenceTypeLookup { Id = RecurrenceType.Daily, Name = "Daily" };
+        Assert.Equal(RecurrenceType.Daily, recurrence.Id);
+        Assert.Equal("Daily", recurrence.Name);
+
+        var recurrenceCtor = new RecurrenceTypeLookup(RecurrenceType.Weekly, "Weekly");
+        Assert.Equal(RecurrenceType.Weekly, recurrenceCtor.Id);
+        Assert.Equal("Weekly", recurrenceCtor.Name);
+
+        // ShareAccessLevelLookup
+        var shareLevel = new ShareAccessLevelLookup { Id = ShareAccessLevel.Manage, Name = "Manage" };
+        Assert.Equal(ShareAccessLevel.Manage, shareLevel.Id);
+        Assert.Equal("Manage", shareLevel.Name);
+
+        var shareLevelCtor = new ShareAccessLevelLookup(ShareAccessLevel.ReadOnly, "ReadOnly");
+        Assert.Equal(ShareAccessLevel.ReadOnly, shareLevelCtor.Id);
+        Assert.Equal("ReadOnly", shareLevelCtor.Name);
+
+        // InvitationStatusLookup
+        var status = new InvitationStatusLookup { Id = InvitationStatus.Tentative, Name = "Tentative" };
+        Assert.Equal(InvitationStatus.Tentative, status.Id);
+        Assert.Equal("Tentative", status.Name);
+
+        var statusCtor = new InvitationStatusLookup(InvitationStatus.Accepted, "Accepted");
+        Assert.Equal(InvitationStatus.Accepted, statusCtor.Id);
+        Assert.Equal("Accepted", statusCtor.Name);
+
+        // NotificationTypeLookup
+        var notification = new NotificationTypeLookup { Id = NotificationType.System, Name = "System" };
+        Assert.Equal(NotificationType.System, notification.Id);
+        Assert.Equal("System", notification.Name);
+
+        var notificationCtor = new NotificationTypeLookup(NotificationType.EventInvitation, "EventInvitation");
+        Assert.Equal(NotificationType.EventInvitation, notificationCtor.Id);
+        Assert.Equal("EventInvitation", notificationCtor.Name);
+    }
 }

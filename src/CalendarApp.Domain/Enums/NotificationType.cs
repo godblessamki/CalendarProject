@@ -3,7 +3,8 @@ namespace CalendarApp.Domain.Enums;
 public enum NotificationType
 {
     EventReminder,
-    InvitationReceived,
+    EventInvitation,
+    InvitationResponse,
     CalendarShared,
-    InvitationResponse
+    System
 }

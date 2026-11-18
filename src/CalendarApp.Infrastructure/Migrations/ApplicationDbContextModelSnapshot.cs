@@ -159,6 +159,8 @@ namespace CalendarApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccessLevel");
+
                     b.HasIndex("SharedWithUserId");
 
                     b.HasIndex("CalendarId", "SharedWithUserId")
@@ -246,6 +248,8 @@ namespace CalendarApp.Infrastructure.Migrations
 
                     b.HasIndex("EndDate");
 
+                    b.HasIndex("Recurrence");
+
                     b.HasIndex("StartDate");
 
                     b.ToTable("Events");
@@ -288,12 +292,51 @@ namespace CalendarApp.Infrastructure.Migrations
 
                     b.HasIndex("InvitedUserId");
 
+                    b.HasIndex("Status");
+
                     b.HasIndex("EventId", "InvitedUserId")
                         .IsUnique();
 
                     b.HasIndex("InvitedUserId", "Status");
 
                     b.ToTable("Invitations");
+                });
+
+            modelBuilder.Entity("CalendarApp.Domain.Entities.InvitationStatusLookup", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InvitationStatuses", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "Pending"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Accepted"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Declined"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Tentative"
+                        });
                 });
 
             modelBuilder.Entity("CalendarApp.Domain.Entities.Notification", b =>
@@ -333,11 +376,129 @@ namespace CalendarApp.Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
+                    b.HasIndex("Type");
+
                     b.HasIndex("UserId");
 
                     b.HasIndex("UserId", "IsRead");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("CalendarApp.Domain.Entities.NotificationTypeLookup", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationTypes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "EventReminder"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "EventInvitation"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "InvitationResponse"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "CalendarShared"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "System"
+                        });
+                });
+
+            modelBuilder.Entity("CalendarApp.Domain.Entities.RecurrenceTypeLookup", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RecurrenceTypes", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "None"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "Daily"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Weekly"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Monthly"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Yearly"
+                        });
+                });
+
+            modelBuilder.Entity("CalendarApp.Domain.Entities.ShareAccessLevelLookup", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShareAccessLevels", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 0,
+                            Name = "ReadOnly"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name = "ReadWrite"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Manage"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -481,6 +642,12 @@ namespace CalendarApp.Infrastructure.Migrations
 
             modelBuilder.Entity("CalendarApp.Domain.Entities.CalendarShare", b =>
                 {
+                    b.HasOne("CalendarApp.Domain.Entities.ShareAccessLevelLookup", null)
+                        .WithMany()
+                        .HasForeignKey("AccessLevel")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("CalendarApp.Domain.Entities.Calendar", "Calendar")
                         .WithMany("Shares")
                         .HasForeignKey("CalendarId")
@@ -511,6 +678,12 @@ namespace CalendarApp.Infrastructure.Migrations
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("CalendarApp.Domain.Entities.RecurrenceTypeLookup", null)
+                        .WithMany()
+                        .HasForeignKey("Recurrence")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Calendar");
 
                     b.Navigation("Category");
@@ -530,6 +703,12 @@ namespace CalendarApp.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CalendarApp.Domain.Entities.InvitationStatusLookup", null)
+                        .WithMany()
+                        .HasForeignKey("Status")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Event");
 
                     b.Navigation("InvitedUser");
@@ -541,6 +720,12 @@ namespace CalendarApp.Infrastructure.Migrations
                         .WithMany("Notifications")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CalendarApp.Domain.Entities.NotificationTypeLookup", null)
+                        .WithMany()
+                        .HasForeignKey("Type")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CalendarApp.Domain.Entities.ApplicationUser", "User")
                         .WithMany("Notifications")

@@ -33,6 +33,11 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
             .HasForeignKey(n => n.EventId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasOne<NotificationTypeLookup>()
+            .WithMany()
+            .HasForeignKey(n => n.Type)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(n => n.UserId);
         builder.HasIndex(n => new { n.UserId, n.IsRead });
         builder.HasIndex(n => n.EventId);
